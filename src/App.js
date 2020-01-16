@@ -1,5 +1,5 @@
 import React from 'react';
-import { Route, NavLink } from 'react-router-dom';
+import { Switch, Route, NavLink } from 'react-router-dom';
 import './App.css';
 
 import PlusIcon from './common/svg/PlusIcon';
@@ -16,8 +16,10 @@ function App(props) {
         </NavLink>
       </header>
       <div className="App-body">
-        <Route path="/" exact component={Articles} />
-        <Route path="/article/:id" component={Article} />
+        <Switch>
+          <Route path="/" exact component={Articles} />
+          <Route path="/article/:id" component={Article} />
+        </Switch>
       </div>
     </div>
   );
