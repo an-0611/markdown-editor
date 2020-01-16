@@ -1,38 +1,135 @@
 .App {
-  text-align: center;
+  text-align: left;
 }
 
-.App-logo {
+/* .App .backArticlesBtn {
+  text-align: center;
+} */
+
+/* .App-logo {
   height: 40vmin;
   pointer-events: none;
-}
-
+} */
+/* 
 @media (prefers-reduced-motion: no-preference) {
   .App-logo {
     animation: App-logo-spin infinite 20s linear;
   }
-}
+} */
 
 .App-header {
   background-color: #282c34;
-  min-height: 100vh;
+  min-height: 5vh;
   display: flex;
-  flex-direction: column;
+  /* flex-direction: column; */
   align-items: center;
-  justify-content: center;
+  /* justify-content: flex-end; */
+  justify-content: space-between;
   font-size: calc(10px + 2vmin);
   color: white;
+  padding: 0 15px;
 }
 
-.App-link {
-  color: #61dafb;
+.home {
+  color: white;
+  cursor: pointer;
+  text-decoration: none;
 }
 
-@keyframes App-logo-spin {
+.App-body {
+  height: 95vh;
+  background: #fff;
+  padding: 15px;
+}
+
+.ArticleContainer {
+  border: 1px solid #d1d5da;
+  border-radius: 3px;
+  margin: 15px 0;
+  border: 1px solid;
+  border-radius: 5px;
+  font-size: 15px;
+  font-weight: 700;
+  line-height: normal;
+  cursor: pointer;
+  transition: 0.3s ease all;
+}
+
+@keyframes fadeInDown {
   from {
-    transform: rotate(0deg);
+    opacity: 0;
+    -webkit-transform: translate3d(0, 100%, 0);
+    transform: translate3d(0, 100%, 0);
   }
+
   to {
-    transform: rotate(360deg);
+    opacity: 1;
+    -webkit-transform: translate3d(0, 0, 0);
+    transform: translate3d(0, 0, 0);
   }
+}
+  
+.fade-in {
+  animation: fadeInDown 1s ease forwards;
+}
+
+.fade-in-delay{
+  animation: fadeInDown 2s ease forwards;
+}
+
+
+.ArticleHeader {
+  color: white;
+  background: black;
+  padding: 0 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.ArticleHeader h2 {
+  /* display: inline-block; */
+}
+
+.ArticleHeader input {
+  font-size:18px;
+  padding:10px 10px 10px 5px;
+  margin: 11px 0;
+  display:block;
+  width:300px;
+  border:none;
+  border-bottom:1px solid #757575;
+}
+
+
+.ArticleFooter {
+  font-size: 8px;
+  color: white;
+  background: black;
+  padding: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.ArticleContent {
+  padding: 12px;
+}
+
+.MarkDownContainer {
+
+}
+
+.btn {
+  display: inline-block;
+    font-weight: 400;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: middle;
+    border: 1px solid white;
+    padding: .375rem .75rem;
+    font-size: 1rem;
+    line-height: 1.5;
+    border-radius: .25rem;
+    transition: color .15s ease-in-out,background-color .15s ease-in-out,border-color .15s ease-in-out,box-shadow .15s ease-in-out;
 }
