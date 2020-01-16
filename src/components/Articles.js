@@ -19,24 +19,27 @@ class Articles extends Component {
     constructor(props) {
         super(props);
         this.state = {
-
+            articles: localStorage.getItem('articles') ? JSON.parse(localStorage.getItem('articles')) : props.articles,
         }
     }
+
     render() {
-        // console.log(this.props.history)
-        const { articles, history } = this.props;
+        const { history } = this.props;
+        const { articles } = this.state;
         const allArticles = articles.map((article, i) => (
             <Fragment key={i}>
-                <div className="ArticleContainer fade-in" onClick={() => { history.push(`/article/${article.id}`) }}>
-                    <h2>{article.title}</h2>
-                    <ReactMarkdown source={article.content} />
+                <div className="ArticleContainer hover-effect fade-in" onClick={() => { history.push(`/article/${article.id}`) }}>
+                    <div className="ArticleContent">
+                        <div className="title">{article.title}</div>
+                        <ReactMarkdown className="padding-10" source={article.content} />
+                    </div>
                 </div>
             </Fragment>
         ));
         return (
             <Fragment>
                 {allArticles}
-                <div className="fade-in-delay">已經是最後一篇文章了</div>
+                <div className="bottomBtn fade-in-delay">已經是最後一篇文章了</div>
             </Fragment>
         );
     }

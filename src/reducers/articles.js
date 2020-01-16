@@ -35,6 +35,7 @@ export default function articlesReducer(state = initialState, action) {
             modifiedTime: action.payload.modifiedTime,
           };
           if (index >= 0) state.articles[index] = modifiedArticle; // state.articles.splice(index, 1);
+          localStorage.setItem('articles', JSON.stringify(state.articles));
           return {
               ...state,
               articles: [...state.articles],

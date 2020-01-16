@@ -11,6 +11,8 @@ import 'codemirror/mode/javascript/javascript'
 
 import * as articleAction from '../actions/articleActions';
 
+import { formatTime } from '../common/utils';
+
 const mapStateToProps = state => ({
     articles: state.articlesReducer.articles,
 })
@@ -19,18 +21,6 @@ const mapDispatchToProps = dispatch => {
     return {
       actions: bindActionCreators({ ...articleAction }, dispatch),
     }
-}
-
-const formatTime = (time) => {
-    if (!time) return;
-    const date = new Date(time);
-    const year = date.getFullYear();
-    const month = date.getMonth() + 1;
-    const day = date.getDate();
-    const hour = date.getHours();
-    const minute = date.getMinutes();
-    const second = date.getSeconds();
-    return `${year}/${month}/${day} - ${hour}:${minute}:${second}`;
 }
 
 const RedBtn = styled.button`
@@ -55,6 +45,7 @@ class Article extends Component {
             title: '',
             content: '',
             modifiedTime: null,
+            articles: localStorage.getItem('articles') ? JSON.parse(localStorage.getItem('articles')) : props.articles,
         }
         this.handleChangeTitle = this.handleChangeTitle.bind(this);
         this.editArticle = this.editArticle.bind(this);
@@ -66,8 +57,8 @@ class Article extends Component {
             match: {
                 params: { id },
             },
-            articles,
         } = this.props;
+        const { articles } = this.state;
         const mappingArticle = articles.find((article) => { return article.id === id; });
         if (mappingArticle) this.setState({
             mappingArticle,
@@ -110,56 +101,51 @@ class Article extends Component {
             // location,
         } = this.props;
         
-        const { ableEdit, title, content, modifiedTime, mappingArticle } = this.state;
+        const { ableEdit, title, content, modifiedTime } = this.state;
         return (
             <Fragment>
                 <Fragment>
                     <div className="ArticleContainer">
-                        <div className="ArticleHeader">
-                            <div>
-                                { !ableEdit && <h2>{title}</h2> }
-                                { ableEdit && <input type="text" value={title} onChange={this.handleChangeTitle} /> }
-                            </div>
-                            <div>
-                                { !ableEdit && <div className="btn" onClick={() => { this.editArticle(id); }}>edit</div> }
-                                { ableEdit && <div className="btn" onClick={() => { this.submitEdit(id); }}>done</div> }
-                                { ableEdit && <div className="btn" onClick={() => { this.cancelEdit(); }}>cancel</div> }
-                            </div>
-                        </div>
-
-                        <div className={ ableEdit ? '' : 'ArticleContent' }>
-                            { !ableEdit && <ReactMarkdown source={content} /> }
+                        <div className="ArticleContent">
+                            { !ableEdit &&
+                                <Fragment>
+                                    <div className="title">
+                                        {title}
+                                        <div className="btn" onClick={() => { this.editArticle(id); }}>edit</div>
+                                    </div>
+                                    <ReactMarkdown className="padding-10" source={content} />
+                                </Fragment>
+                            }
                             { ableEdit &&
-                                <CodeMirror
-                                    value={content} // this.state.value
-                                    options={{
-                                        mode: 'markdown',
-                                        // theme: 'material',
-                                        theme: 'eclipse',
-                                        lineNumbers: true
-                                    }} // options
-                                    onBeforeChange={(editor, data, value) => {
-                                        this.setState({ content: value });
-                                    }}
-                                    onChange={(editor, data, value) => {
-                                    }}
-                                />
-                                // <form id="noter-save-form" method="POST">
-                                //     <textarea id="noter-text-area" name="textarea" value={article.content} onChange={() => { }} />
-                                //     <input type="submit" value="Save" />
-                                // </form>
-                                // <div className="MarkDownContainer">
-                                //     <textarea></textarea>
-                                // </div>
+                                <Fragment>
+                                    <div className="title">
+                                        <input type="text" value={title} onChange={this.handleChangeTitle} />
+                                        <div className="btn" onClick={() => { this.cancelEdit(); }}>cancel</div>
+                                        <div className="btn" onClick={() => { this.submitEdit(id); }}>done</div>
+                                    </div>
+                                    <CodeMirror
+                                        value={content} // this.state.value
+                                        options={{
+                                            mode: 'markdown',
+                                            theme: 'eclipse',
+                                            lineNumbers: true
+                                        }}
+                                        onBeforeChange={(editor, data, value) => {
+                                            this.setState({ content: value });
+                                        }}
+                                        onChange={(editor, data, value) => {
+                                        }}
+                                    />
+                                </Fragment>
                             }
                         </div>
-                        
                         <div className="ArticleFooter">
                             <div>{`Last-Modified: ${formatTime(modifiedTime)}`}</div>
                         </div>
                     </div>
+                    <RedBtn className="bottomBtn fade-in-delay" onClick={() => { history.push('/') }}>back to Articles</RedBtn>
                 </Fragment>
-                <RedBtn className="backArticlesBtn" onClick={() => { history.push('/') }}>back to Articles</RedBtn>
+                
             </Fragment>
         );
     }
