@@ -105,8 +105,13 @@ class Article extends Component {
         this.setState({ ableEdit: true });
     }
 
-    submitEdit(id) {
-        const { actions } = this.props;
+    submitEdit() {
+        const {
+            match: {
+                params: { id },
+            },
+            actions,
+        } = this.props;
         const { title, content } = this.state;
         if (title.trim() === '' || title.length === 0) {
             this.setState({ errorMessage: '標題不可為空，請至少輸入一字' });
@@ -131,12 +136,7 @@ class Article extends Component {
     }
 
     render() {
-        const {
-            match: {
-                params: { id },
-            },
-            history,
-        } = this.props;
+        const { history } = this.props;
         const { ableEdit, title, content, modifiedTime, errorMessage, showDoneBtn } = this.state;
         return (
             <Fragment>
@@ -144,13 +144,13 @@ class Article extends Component {
                     <div className="ArticleContent">
                         <div className="title">
                             { !ableEdit && title}
-                            { !ableEdit && <div className="btn" onClick={() => { this.editArticle(id); }}>edit</div>}
+                            { !ableEdit && <div className="btn" onClick={() => { this.editArticle(); }}>edit</div>}
                             { ableEdit &&
                                 <div>
                                     <input type="text" value={title} onChange={this.handleChangeTitle} placeholder="請輸入至少一個字元" />
                                     { errorMessage && <ErrorMessage errorMessage={errorMessage} />}
                                     <div className="btn" onClick={() => { this.cancelEdit(); }}>cancel</div>
-                                    { showDoneBtn && <div className="btn" onClick={() => { this.submitEdit(id); }}>done</div> }
+                                    { showDoneBtn && <div className="btn" onClick={() => { this.submitEdit(); }}>done</div> }
                                 </div>
                             }
                         </div>

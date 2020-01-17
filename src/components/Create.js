@@ -47,16 +47,16 @@ class Create extends Component {
     createArticle() {
       const { title, content } = this.state;
       const { actions, history } = this.props;
-      // if (title.trim() === '' || title.length === 0) {
-      //   this.setState({ errorMessage: '標題不可為空，請至少輸入一字' });
-      //   return ;
-      // };
-      // actions.createArticle({ // create actions
-      //   id: uuid(),
-      //   title,
-      //   content,
-      //   modifiedTime: new Date().getTime(),
-      // });
+      if (title.trim() === '' || title.length === 0) {
+        this.setState({ errorMessage: '標題不可為空，請至少輸入一字' });
+        return ;
+      };
+      actions.createArticleData({ // create actions
+        id: uuid(),
+        title,
+        content,
+        modifiedTime: new Date().getTime(),
+      });
       history.push({
         pathname: '/',
         state: {

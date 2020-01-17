@@ -1,15 +1,15 @@
-import { GET_ARTICLES_DATA, UPDATE_ARTICLE_DATA } from '../actions/articleActions';
+import { GET_ARTICLES_DATA, UPDATE_ARTICLE_DATA, CREATE_ARTICLE_DATA } from '../actions/articleActions';
 
 const initialState = {
   articles: [
     {
-        id: '1579242010189',
+        id: 'dea59ea7-1f1a-4d29-b900-9740cf260b72',
         title: 'title1',
         content: '# This is a header\n\nAnd this is a paragraph',
         modifiedTime: 1579157754943,
     },
     {
-        id: '1579242043136',
+        id: '5908732b-9cb4-4e02-914d-79587e00e2c9',
         title: 'title2',
         content: `### Step 1 : Create your app
         \`\`\`$ npm install -g create-react-app $ create-react-app my-app
@@ -27,18 +27,26 @@ export default function articlesReducer(state = initialState, action) {
             //   articles: action.payload.articles,
           }
       case UPDATE_ARTICLE_DATA:
-          const index = state.articles.findIndex((article) => { return article.id === action.payload.id; });
+          const articles = localStorage.getItem('articles') ? JSON.parse(localStorage.getItem('articles')) : state.articles;
+          const index = articles.findIndex((article) => { return article.id === action.payload.id; });
           const modifiedArticle = {
             id: action.payload.id,
             title: action.payload.title,
             content: action.payload.content,
             modifiedTime: action.payload.modifiedTime,
           };
-          if (index >= 0) state.articles[index] = modifiedArticle; // state.articles.splice(index, 1);
-          localStorage.setItem('articles', JSON.stringify(state.articles));
+          if (index >= 0) articles[index] = modifiedArticle;
+          localStorage.setItem('articles', JSON.stringify(articles));
           return {
               ...state,
-              articles: [...state.articles],
+              articles: [...articles],
+          }
+      case CREATE_ARTICLE_DATA:
+          if (localStorage.getItem('articles')) localStorage.setItem('articles', JSON.stringify([...JSON.parse(localStorage.getItem('articles')), action.payload.newArticle]));
+          else localStorage.setItem('articles', JSON.stringify([...state.articles, action.payload.newArticle])); // only reducer data
+          return {
+            ...state,
+            articles: [...state.articles, action.payload.newArticle],
           }
     //   case FETCH_PRODUCTS_ERROR:
     //       return {

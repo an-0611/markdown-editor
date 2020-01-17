@@ -1,6 +1,7 @@
 export const GET_ARTICLES_DATA = 'GET_ARTICLE_DATA';
 export const UPDATE_ARTICLE_DATA = 'UPDATE_ARTICLE_DATA';
-// export const DELETE_ARTICLE_DATA = 'DELETE_ARTICLE_DATA'; 
+export const CREATE_ARTICLE_DATA = 'CREATE_ARTICLE_DATA';
+// export const DELETE_ARTICLE_DATA = 'DELETE_ARTICLE_DATA';
 
 export function getArticlesData(articles) {
     return {
@@ -18,6 +19,15 @@ export function updateArticleData(id, title, content, modifiedTime) {
             content,
             modifiedTime,
         },
+    }
+}
+
+export function createArticleData(newArticle) {
+    return {
+        type: CREATE_ARTICLE_DATA,
+        payload: {
+            newArticle,
+        }
     }
 }
 
