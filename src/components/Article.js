@@ -1,20 +1,19 @@
 import React, { Fragment, Component } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import styled from "styled-components";
 import ReactMarkdown from 'react-markdown';
-import {Controlled as CodeMirror} from 'react-codemirror2';
-import 'codemirror/lib/codemirror.css';
-import 'codemirror/theme/material.css';
-import 'codemirror/mode/xml/xml';
-import 'codemirror/mode/javascript/javascript'
+
+import styled from "styled-components";
 
 import * as articleAction from '../actions/articleActions';
 
-import { formatTime } from '../common/utils';
+import EditMode from './EditMode';
+import ErrorMessage from './ErrorMessage';
+import ArticleFooter from './ArticleFooter';
 
 const mapStateToProps = state => ({
     articles: state.articlesReducer.articles,
+    // ableEdit: state.articlesReducer.ableEdit,
 })
 
 const mapDispatchToProps = dispatch => {
@@ -24,10 +23,12 @@ const mapDispatchToProps = dispatch => {
 }
 
 const RedBtn = styled.button`
+    width: 100%;
     padding: 12px 24px;
     border: 1px solid;
     color: #ec4646;
     background: transparent;
+    text-align: center;
     font-size: 15px;
     font-weight: 700;
     line-height: normal;
@@ -44,11 +45,15 @@ class Article extends Component {
             ableEdit: false,
             title: '',
             content: '',
-            modifiedTime: null,
+            modifiedTime: 0,
             articles: localStorage.getItem('articles') ? JSON.parse(localStorage.getItem('articles')) : props.articles,
+            errorMessage: '',
+            showDoneBtn: false,
         }
         this.handleChangeTitle = this.handleChangeTitle.bind(this);
+        this.handleChangeContent = this.handleChangeContent.bind(this);
         this.editArticle = this.editArticle.bind(this);
+        this.submitEdit = this.submitEdit.bind(this);
         this.cancelEdit = this.cancelEdit.bind(this);
     }
 
@@ -57,19 +62,43 @@ class Article extends Component {
             match: {
                 params: { id },
             },
+            history,
         } = this.props;
         const { articles } = this.state;
         const mappingArticle = articles.find((article) => { return article.id === id; });
-        if (mappingArticle) this.setState({
-            mappingArticle,
-            title: mappingArticle.title,
-            content: mappingArticle.content,
-            modifiedTime: mappingArticle.modifiedTime,
-        });
+        if (mappingArticle) {
+            this.setState({
+                mappingArticle,
+                title: mappingArticle.title,
+                content: mappingArticle.content,
+                modifiedTime: mappingArticle.modifiedTime,
+            });
+            return;
+        }
+        history.push('/404/');
+    }
+
+    componentDidUpdate(prevProps, prevState) {
+        // shouldComponentUpdate => componentWillUpdate => render => componentDidUpdate
+        if (prevState.mappingArticle.title !== this.state.title && !prevState.showDoneBtn) {
+            this.setState({ showDoneBtn: true });
+        }
+        if (prevState.mappingArticle.content !== this.state.content && !prevState.showDoneBtn) {
+            this.setState({ showDoneBtn: true });
+        }
+        if (prevState.mappingArticle.title === this.state.title && prevState.mappingArticle.content === this.state.content && prevState.showDoneBtn) {
+            this.setState({ showDoneBtn: false });
+        }
     }
 
     handleChangeTitle(event) {
-        this.setState({ title: event.target.value});
+        this.setState({ title: event.target.value });
+        const { errorMessage } = this.state;
+        if (errorMessage && event.target.value !== '') this.setState({ errorMessage: '' });
+    }
+
+    handleChangeContent(value) {
+        this.setState({ content: value });
     }
 
     editArticle() {
@@ -79,7 +108,10 @@ class Article extends Component {
     submitEdit(id) {
         const { actions } = this.props;
         const { title, content } = this.state;
-        if (title.length === 0) return;
+        if (title.trim() === '' || title.length === 0) {
+            this.setState({ errorMessage: '標題不可為空，請至少輸入一字' });
+            return ;
+        }
         const time = new Date().getTime();
         this.setState({
             ableEdit: false,
@@ -89,7 +121,13 @@ class Article extends Component {
     }
 
     cancelEdit() {
-        this.setState({ ableEdit: false });
+        const { mappingArticle } = this.state;
+        this.setState({
+            ableEdit: false,
+            title: mappingArticle.title,
+            content: mappingArticle.content,
+            modifiedTime: mappingArticle.modifiedTime,
+        });
     }
 
     render() {
@@ -98,54 +136,30 @@ class Article extends Component {
                 params: { id },
             },
             history,
-            // location,
         } = this.props;
-        
-        const { ableEdit, title, content, modifiedTime } = this.state;
+        const { ableEdit, title, content, modifiedTime, errorMessage, showDoneBtn } = this.state;
         return (
             <Fragment>
-                <Fragment>
-                    <div className="ArticleContainer">
-                        <div className="ArticleContent">
-                            { !ableEdit &&
-                                <Fragment>
-                                    <div className="title">
-                                        {title}
-                                        <div className="btn" onClick={() => { this.editArticle(id); }}>edit</div>
-                                    </div>
-                                    <ReactMarkdown className="padding-10" source={content} />
-                                </Fragment>
-                            }
+                <div className="ArticleContainer">
+                    <div className="ArticleContent">
+                        <div className="title">
+                            { !ableEdit && title}
+                            { !ableEdit && <div className="btn" onClick={() => { this.editArticle(id); }}>edit</div>}
                             { ableEdit &&
-                                <Fragment>
-                                    <div className="title">
-                                        <input type="text" value={title} onChange={this.handleChangeTitle} />
-                                        <div className="btn" onClick={() => { this.cancelEdit(); }}>cancel</div>
-                                        <div className="btn" onClick={() => { this.submitEdit(id); }}>done</div>
-                                    </div>
-                                    <CodeMirror
-                                        value={content} // this.state.value
-                                        options={{
-                                            mode: 'markdown',
-                                            theme: 'eclipse',
-                                            lineNumbers: true
-                                        }}
-                                        onBeforeChange={(editor, data, value) => {
-                                            this.setState({ content: value });
-                                        }}
-                                        onChange={(editor, data, value) => {
-                                        }}
-                                    />
-                                </Fragment>
+                                <div>
+                                    <input type="text" value={title} onChange={this.handleChangeTitle} placeholder="請輸入至少一個字元" />
+                                    { errorMessage && <ErrorMessage errorMessage={errorMessage} />}
+                                    <div className="btn" onClick={() => { this.cancelEdit(); }}>cancel</div>
+                                    { showDoneBtn && <div className="btn" onClick={() => { this.submitEdit(id); }}>done</div> }
+                                </div>
                             }
                         </div>
-                        <div className="ArticleFooter">
-                            <div>{`Last-Modified: ${formatTime(modifiedTime)}`}</div>
-                        </div>
+                        { !ableEdit && <ReactMarkdown className="padding-10" source={content} />}
+                        { ableEdit && <EditMode content={content} onChange={this.handleChangeContent} />} 
                     </div>
-                    <RedBtn className="bottomBtn fade-in-delay" onClick={() => { history.push('/') }}>back to Articles</RedBtn>
-                </Fragment>
-                
+                    <ArticleFooter modifiedTime={modifiedTime} />
+                </div>
+                <RedBtn className="fade-in-delay" onClick={() => { history.push('/') }}>back to Articles</RedBtn>
             </Fragment>
         );
     }

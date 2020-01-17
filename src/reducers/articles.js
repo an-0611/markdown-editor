@@ -3,13 +3,13 @@ import { GET_ARTICLES_DATA, UPDATE_ARTICLE_DATA } from '../actions/articleAction
 const initialState = {
   articles: [
     {
-        id: '1',
+        id: '1579242010189',
         title: 'title1',
         content: '# This is a header\n\nAnd this is a paragraph',
         modifiedTime: 1579157754943,
     },
     {
-        id: '2',
+        id: '1579242043136',
         title: 'title2',
         content: `### Step 1 : Create your app
         \`\`\`$ npm install -g create-react-app $ create-react-app my-app

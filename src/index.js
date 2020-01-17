@@ -1,7 +1,12 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { BrowserRouter, Switch } from 'react-router-dom';
+import {
+    // Router,
+    // BrowserRouter,
+    HashRouter,
+} from 'react-router-dom';
 import { Provider } from 'react-redux';
+// import { createBrowserHistory } from 'history';
 
 import './index.css';
 import configureStore from './store/configureStore';
@@ -9,22 +14,25 @@ import App from './App';
 import * as serviceWorker from './serviceWorker';
 
 const client = {}
-const history = {}
+// const history = createBrowserHistory();
+const history = {};
 const preloadedState = window.INITIAL_STATE;
 const store = configureStore(client, history, preloadedState);
 
 ReactDOM.render(
     <Provider store={store}>
-        <BrowserRouter basename={process.env.PUBLIC_URL}>
-            <Switch>
-                <App />
-                {/* <Route exact path="/" component={App} /> */}
-                {/* <Route component={() => (<div>404 Not found </div>)} /> */}
-            </Switch>
-        </BrowserRouter>
+        {/* <BrowserRouter basename={process.env.PUBLIC_URL}> */}
+        <HashRouter>
+            <App />
+            {/* <Route exact path="/" component={App} /> */}
+            {/* <Route component={() => (<div>404 Not found </div>)} /> */}
+        </HashRouter>
+        {/* </BrowserRouter> */}
     </Provider>,
     document.getElementById('root')
 );
+// https://create-react-app.dev/docs/deployment/#docsNav
+// https://github.com/rafrex/spa-github-pages
 
 // https://zhuanlan.zhihu.com/p/52559555
 // https://pjchender.blogspot.com/2018/11/react-react-router-dynamic-breadcrumb.html
