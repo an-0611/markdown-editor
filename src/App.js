@@ -1,23 +1,20 @@
 import React from 'react';
-import { Switch, Route, NavLink } from 'react-router-dom';
+import { Switch, Route } from 'react-router-dom';
 
-import './App.css';
+import './assets/markdown.css';
+import { GlobalStyle } from './GlobalStyle';
 
-import PlusIcon from './common/svg/PlusIcon';
-import Articles from './components/Articles';
-import Article from './components/Article';
-import Create from './components/Create';
-import Page404 from './components/Page404';
+import Nav from './components/Nav';
+import Articles from './containers/Articles';
+import Article from './containers/Article';
+import Create from './containers/Create';
+import Page404 from './containers/Page404';
 
-function App(props) {
+function App() {
   return (
     <div className="App">
-      <header className="App-header">
-        <NavLink to="/" className="home">home3</NavLink>
-        <NavLink to="/create/">
-          <PlusIcon handleClick={() => { console.log(1); }}/>
-        </NavLink>
-      </header>
+      <GlobalStyle />
+      <Nav />
       <div className="App-body">
         <Switch>
             <Route exact path="/" component={Articles} />
@@ -25,10 +22,6 @@ function App(props) {
             <Route path="/create/" component={Create} />
             <Route path="/404/" component={Page404} />
         </Switch>
-        {/* <Switch> */}
-          {/* <Route path="/" exact component={Articles} /> */}
-          {/* <Route path="/article/:id" component={Article} /> */}
-        {/* </Switch> */}
       </div>
     </div>
   );

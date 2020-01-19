@@ -1,6 +1,7 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 
-function PlusIcon(props) {
+export default function PlusIcon(props) {
     const { handleClick } = props;
     return (
         <div onClick={handleClick}>
@@ -11,4 +12,10 @@ function PlusIcon(props) {
     );
 }
 
-export default PlusIcon;
+PlusIcon.defaultProps = {
+    handleClick: () => { },
+};
+
+PlusIcon.propTypes = {
+    handleClick: PropTypes.func,
+};

@@ -1,12 +1,10 @@
 export const GET_ARTICLES_DATA = 'GET_ARTICLE_DATA';
 export const UPDATE_ARTICLE_DATA = 'UPDATE_ARTICLE_DATA';
 export const CREATE_ARTICLE_DATA = 'CREATE_ARTICLE_DATA';
-// export const DELETE_ARTICLE_DATA = 'DELETE_ARTICLE_DATA';
 
-export function getArticlesData(articles) {
+export function getArticlesData() {
     return {
         type: GET_ARTICLES_DATA,
-        // payload: articles
     }
 }
 
@@ -30,10 +28,3 @@ export function createArticleData(newArticle) {
         }
     }
 }
-
-// export function fetchProductsError(error) {
-//     return {
-//         type: DELETE_ARTICLE_DATA,
-//         error: error
-//     }
-// }

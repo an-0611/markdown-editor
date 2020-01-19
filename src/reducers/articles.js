@@ -1,30 +1,12 @@
 import { GET_ARTICLES_DATA, UPDATE_ARTICLE_DATA, CREATE_ARTICLE_DATA } from '../actions/articleActions';
-
-const initialState = {
-  articles: [
-    {
-        id: 'dea59ea7-1f1a-4d29-b900-9740cf260b72',
-        title: 'title1',
-        content: '# This is a header\n\nAnd this is a paragraph',
-        modifiedTime: 1579157754943,
-    },
-    {
-        id: '5908732b-9cb4-4e02-914d-79587e00e2c9',
-        title: 'title2',
-        content: `### Step 1 : Create your app
-        \`\`\`$ npm install -g create-react-app $ create-react-app my-app
-        \`\`\` ### Step 2 : Build it for production`,
-        modifiedTime: 1579197794943,
-    }
-  ],
-}
+import { initialState } from './initialState';
 
 export default function articlesReducer(state = initialState, action) {
   switch (action.type) { // 3. accroding actions.type, and use action creator's payload data (e.g. : FETCH_PRODUCTS_PENDING) to change reducer data,
       case GET_ARTICLES_DATA: 
           return {
               ...state,
-            //   articles: action.payload.articles,
+              // articles: localStorage.getItem('articles') ? JSON.parse(localStorage.getItem('articles')) : ,
           }
       case UPDATE_ARTICLE_DATA:
           const articles = localStorage.getItem('articles') ? JSON.parse(localStorage.getItem('articles')) : state.articles;
@@ -48,12 +30,6 @@ export default function articlesReducer(state = initialState, action) {
             ...state,
             articles: [...state.articles, action.payload.newArticle],
           }
-    //   case FETCH_PRODUCTS_ERROR:
-    //       return {
-    //           ...state,
-    //           pending: false,
-    //           error: action.error
-    //       }
       default: 
           return state;
   }
