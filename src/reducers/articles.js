@@ -3,10 +3,11 @@ import { initialState } from './initialState';
 
 export default function articlesReducer(state = initialState, action) {
   switch (action.type) { // 3. accroding actions.type, and use action creator's payload data (e.g. : FETCH_PRODUCTS_PENDING) to change reducer data,
-      case GET_ARTICLES_DATA: 
+      case GET_ARTICLES_DATA:
+          localStorage.setItem('articles', JSON.stringify([...state.articles]));
           return {
               ...state,
-              // articles: localStorage.getItem('articles') ? JSON.parse(localStorage.getItem('articles')) : ,
+              // articles: localStorage.getItem('articles') ? JSON.parse(localStorage.getItem('articles')),
           }
       case UPDATE_ARTICLE_DATA:
           const articles = localStorage.getItem('articles') ? JSON.parse(localStorage.getItem('articles')) : state.articles;

@@ -7,13 +7,14 @@ import * as articleAction from '../actions/articleActions';
 import styled from "styled-components";
 import { fadeInDown, fadeOutUp } from '../assets/animation';
 
+import Alert from '../components/Alert';
 import EditMode from '../components/EditMode';
-import ErrorMessage from '../components/ErrorMessage';
 import ArticleFooter from '../components/ArticleFooter';
 import Btn from '../components/Btn';
 
 const mapStateToProps = state => ({
     articles: state.articlesReducer.articles,
+    article: state.articlesReducer.article, // actions.setArticle(return article.id === id)
 });
 
 const mapDispatchToProps = dispatch => {
@@ -101,7 +102,8 @@ class Article extends Component {
             history,
         } = this.props;
         const { articles } = this.state;
-        const mappingArticle = articles.find((article) => { return article.id === id; });
+        // actions.getArticle(id);
+        const mappingArticle = articles.find((article) => { return article.id === id; }); // api action.getarticle(id) || localStorage.getItem()
         if (mappingArticle) {
             this.setState({
                 mappingArticle,
@@ -200,7 +202,7 @@ class Article extends Component {
         });
     }
 
-    preview() {
+    preview = () => {
         this.setState({ isPreview: !this.state.isPreview });
     }
 
@@ -209,6 +211,7 @@ class Article extends Component {
         const { ableEdit, title, content, modifiedTime, errorMessage, showDoneBtn, showCopyAlert } = this.state;
         return (
             <Fragment>
+                {errorMessage && <Alert error alertText={errorMessage} /> }
                 <UrlInput ref={(input) => this.input = input} defaultValue={window.location.href} />
                 { showCopyAlert && <CopyAlert>success to copy url</CopyAlert> }
                 <div className="ArticleContainer">
@@ -217,7 +220,6 @@ class Article extends Component {
                             <div>
                                 { !ableEdit && <div>{title}</div>}
                                 { ableEdit && <input type="text" value={title} onChange={this.handleChangeTitle} placeholder="at least one word" /> }
-                                { errorMessage && <ErrorMessage errorMessage={errorMessage} />}
                             </div>
                             <BtnContainer>
                                 { !ableEdit &&
