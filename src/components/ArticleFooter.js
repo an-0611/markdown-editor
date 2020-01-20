@@ -16,14 +16,14 @@ const FooterContainer = styled.div`
 `;
 
 export default function ArticleFooter(props) {
-  const { modifiedTime } = props;
+  const { time } = props;
   return (
     <FooterContainer>
-      <div>{`Last-Modified: ${formatTime(modifiedTime)}`}</div>
+      <div>{`Last-Modified: ${formatTime(time)}`}</div>
     </FooterContainer>
   );
 }
 
 ArticleFooter.propTypes = {
-  modifiedTime: PropTypes.number.isRequired,
+  time: PropTypes.number.isRequired,
 };

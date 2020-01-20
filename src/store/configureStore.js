@@ -1,8 +1,9 @@
 import {
   createStore,
-  // applyMiddleware,
+  applyMiddleware,
   compose,
 } from 'redux'
+import thunk from 'redux-thunk';
 
 import reducers from '../reducers';
 
@@ -19,6 +20,7 @@ export default function configureStore(client, history, initialState) {
     initialState,
     composeEnhancers(
       // applyMiddleware(client.middleware()),
+      applyMiddleware(thunk)
     ),
   );
 

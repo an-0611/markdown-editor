@@ -1,8 +1,8 @@
 import React, { Fragment, Component } from 'react';
 import { connect } from 'react-redux';
-import { bindActionCreators } from 'redux';
 import ReactMarkdown from 'react-markdown';
-import * as articleAction from '../actions/articleActions';
+
+import { FetchArticle, UpdateArticles } from '../reducers/articles';
 
 import styled from "styled-components";
 import { fadeInDown, fadeOutUp } from '../assets/animation';
@@ -14,12 +14,15 @@ import Btn from '../components/Btn';
 
 const mapStateToProps = state => ({
     articles: state.articlesReducer.articles,
-    article: state.articlesReducer.article, // actions.setArticle(return article.id === id)
+    article: state.articlesReducer.article,
+    pending: state.articlesReducer.pending,
 });
 
 const mapDispatchToProps = dispatch => {
     return {
-      actions: bindActionCreators({ ...articleAction }, dispatch),
+        dispatch,
+        getArticle: (id) => dispatch(FetchArticle(id)),
+        updateArticle: ({ id, title, content, time }) => dispatch(UpdateArticles({ id, title, content, time })),
     }
 };
 
@@ -79,12 +82,8 @@ class Article extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            mappingArticle: {},
-            ableEdit: false,
-            title: '',
-            content: '',
-            modifiedTime: 0,
-            articles: localStorage.getItem('articles') ? JSON.parse(localStorage.getItem('articles')) : props.articles,
+            cacheArticle: {},
+            ableEdit: false,       
             errorMessage: '',
             showDoneBtn: false,
             showCopyAlert: false,
@@ -95,36 +94,23 @@ class Article extends Component {
     componentDidMount() {
         this._isMounted = true;
         if (!this._isMounted) return;
-        const {
-            match: {
-                params: { id },
-            },
-            history,
-        } = this.props;
-        const { articles } = this.state;
-        // actions.getArticle(id);
-        const mappingArticle = articles.find((article) => { return article.id === id; }); // api action.getarticle(id) || localStorage.getItem()
-        if (mappingArticle) {
-            this.setState({
-                mappingArticle,
-                title: mappingArticle.title,
-                content: mappingArticle.content,
-                modifiedTime: mappingArticle.modifiedTime,
-            });
-            return;
-        }
-        history.push('/404/');
+        const { match: { params: { id }, }, } = this.props;
+        this.props.getArticle(id).then(() => {
+            this.setState({ cacheArticle: this.props.article });
+        });
     }
 
     componentDidUpdate(prevProps, prevState) {
         if (!this._isMounted) return;
-        if (prevState.mappingArticle.title && prevState.mappingArticle.title !== this.state.title && !prevState.showDoneBtn) {
+        const { cacheArticle } = this.state;
+        // console.log(cacheArticle);
+        if (prevProps.article.title !== cacheArticle.title && !prevState.showDoneBtn) {
             this.setState({ showDoneBtn: true });
         }
-        if (prevState.mappingArticle.content && prevState.mappingArticle.content !== this.state.content && !prevState.showDoneBtn) {
+        if (prevProps.article.content !== cacheArticle.content && !prevState.showDoneBtn) {
             this.setState({ showDoneBtn: true });
         }
-        if (prevState.mappingArticle.title === this.state.title && prevState.mappingArticle.content === this.state.content && prevState.showDoneBtn) {
+        if (prevProps.article.title === cacheArticle.title && prevProps.article.content === cacheArticle.content && prevState.showDoneBtn) {
             this.setState({ showDoneBtn: false });
         }
     }
@@ -135,56 +121,64 @@ class Article extends Component {
 
     handleChangeTitle = (event) => {
         if (!this._isMounted) return;
-        const { errorMessage } = this.state;
-        this.setState({ title: event.target.value });
-        if (errorMessage && event.target.value !== '') this.setState({ errorMessage: '' });
+        const { errorMessage, cacheArticle } = this.state;
+        this.setState({
+            cacheArticle: {
+                ...cacheArticle,
+                title: event.target.value,
+            }
+        });
+        if (errorMessage && event.target.value.trim() !== '') this.setState({ errorMessage: '' });
     }
 
     handleChangeContent = (value) => {
         if (!this._isMounted) return;
-        const { errorMessage } = this.state;
+        const { errorMessage, cacheArticle } = this.state;
         this.setState({ content: value });
-        if (errorMessage && value !== '') this.setState({ errorMessage: '' });
+        this.setState({
+            cacheArticle: {
+                ...cacheArticle,
+                content: value,
+            }
+        });
+        if (errorMessage && value.trim() !== '') this.setState({ errorMessage: '' });
     }
 
     editArticle = () => {
-        if (!this._isMounted) return;
         this.setState({ ableEdit: true });
     }
 
     submitEdit = () => {
         if (!this._isMounted) return;
+        const { match: { params: { id }, }, } = this.props;
         const {
-            match: {
-                params: { id },
-            },
-            actions,
-        } = this.props;
-        const { title, content } = this.state;
-        if (title.trim() === '') {
+            cacheArticle: {
+                title, content,
+            }
+        } = this.state;
+        if (title === '') {
             this.setState({ errorMessage: 'Title: at least one word' });
             return ;
         }
-        if (content.trim() === '') {
+        if (content === '') {
             this.setState({ errorMessage: 'Content: at least one word' });
             return ;
         }
-        const time = new Date().getTime();
-        this.setState({
-            ableEdit: false,
-            modifiedTime: time,
+        this.setState({ ableEdit: false, showDoneBtn: false });
+        this.props.updateArticle({
+            id,
+            title,
+            content,
+            time: new Date().getTime(),
         });
-        actions.updateArticleData(id, title, content, time);
     }
 
     cancelEdit = () => {
-        if (!this._isMounted) return;
-        const { mappingArticle } = this.state;
+        const { article } = this.props;
         this.setState({
             ableEdit: false,
-            title: mappingArticle.title,
-            content: mappingArticle.content,
-            modifiedTime: mappingArticle.modifiedTime,
+            cacheArticle: {...article},
+            // showDoneBtn: false,
         });
     }
 
@@ -207,8 +201,11 @@ class Article extends Component {
     }
 
     render() {
-        const { history } = this.props;
-        const { ableEdit, title, content, modifiedTime, errorMessage, showDoneBtn, showCopyAlert } = this.state;
+        const { history, article, pending } = this.props;
+        const { ableEdit, errorMessage, showDoneBtn, showCopyAlert, cacheArticle } = this.state;
+        if (pending) return <div>Loading</div>;
+        // console.log(this.state.cacheArticle)
+        console.log(article.time);
         return (
             <Fragment>
                 {errorMessage && <Alert error alertText={errorMessage} /> }
@@ -218,8 +215,8 @@ class Article extends Component {
                     <div className="ArticleContent">
                         <div className="title"> 
                             <div>
-                                { !ableEdit && <div>{title}</div>}
-                                { ableEdit && <input type="text" value={title} onChange={this.handleChangeTitle} placeholder="at least one word" /> }
+                                { !ableEdit && <div>{cacheArticle.title || article.title}</div>}
+                                { ableEdit && <input type="text" value={cacheArticle.title || article.title} onChange={this.handleChangeTitle} placeholder="at least one word" /> }
                             </div>
                             <BtnContainer>
                                 { !ableEdit &&
@@ -237,10 +234,10 @@ class Article extends Component {
                                 }
                             </BtnContainer>
                         </div>
-                        { (!ableEdit || this.state.isPreview) && <ReactMarkdown className="markdown-body" source={content} escapeHtml={false} skipHtml={false} />}
-                        { (ableEdit && !this.state.isPreview) && <EditMode content={content} onChange={this.handleChangeContent} />} 
+                        { (!ableEdit || this.state.isPreview) && <ReactMarkdown className="markdown-body" source={cacheArticle.content || article.content} escapeHtml={false} skipHtml={false} />}
+                        { (ableEdit && !this.state.isPreview) && <EditMode content={cacheArticle.content || article.content} onChange={this.handleChangeContent} />} 
                     </div>
-                    <ArticleFooter modifiedTime={modifiedTime} />
+                    <ArticleFooter time={article.time} />
                 </div>
                 <RedBtn onClick={() => { history.push('/') }}>back to Articles</RedBtn>
             </Fragment>

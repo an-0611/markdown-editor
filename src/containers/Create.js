@@ -91,7 +91,7 @@ class Create extends Component {
         id: uuid(),
         title,
         content,
-        modifiedTime: new Date().getTime(),
+        time: new Date().getTime(),
       };
       actions.createArticleData(newArticle);
       history.push({

@@ -21,7 +21,7 @@ export default function ArticleContainer(article) {
                 <div className="title">{article.title}</div>
                 <ReactMarkdown className="markdown-body overHidden-300" source={article.content} escapeHtml={false} skipHtml={false} />
             </div>
-            <ArticleFooter modifiedTime={article.modifiedTime} />
+            <ArticleFooter time={article.time} />
         </ArticleHover>
     );
 }

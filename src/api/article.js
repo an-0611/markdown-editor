@@ -1,34 +1,38 @@
 import api from './api';
 import storage from './storage';
 
-export default { getAll, getOne, updateOne };
+export default { fetchAllArticles, fetchArticle, updateArticle };
 
-function getAll() { // ok
-    return new Promise( resolve => {
-        let articles = storage.fetchArticles();
-        if ( articles ) resolve(list);
-        else api.fetchArticles().then(({ data }) => {
+function fetchAllArticles() {
+    return new Promise(resolve => {
+        let articles = storage.fetchAllArticles();
+        console.log(articles)
+        if (articles) resolve(articles);
+        else api.fetchAllArticles().then(({ data }) => {
             resolve(data);
-            storage.saveArticles(data);
+            storage.set(data);
         });
     } );
 }
 
-function getOne (id) {
+function fetchArticle(id) {
     return new Promise(resolve => {
-        const item = storage.fetchArticle(id);
-        if ( item && item.id ) resolve(item);
+        const article = storage.fetchArticle(id);
+        if (article && article.id) resolve(article);
         else api.fetchArticle(id).then(({ data }) => {
             resolve(data);
         });
     });
 }
 
-function updateOne({ id, subject, content}) {
+function updateArticle(modifyArticle) {
     return new Promise(resolve => {
-        api.updateArticle({ id, subject, content}).then( ({ data }) => {
-            resolve(data);
-            storage.saveArticles(data)
+        const article = storage.updateArticle(modifyArticle);
+        console.log(article);
+        if (article) resolve(article);
+        else api.updateArticle(modifyArticle).then(({ articles }) => {
+            resolve(articles);
+            storage.set(articles);
         })
     } );
 }
