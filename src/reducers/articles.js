@@ -55,6 +55,7 @@ import {
   CREATE_ARTICLE_LOADING, CREATE_ARTICLE_SUCCESS, CREATE_ARTICLE_ERROR, // create article
 } from '../actions/articleActions';
 
+
 export const {
   // fetch articles
   loadArticlesLoading,
@@ -83,7 +84,7 @@ export const {
   UPDATE_ARTICLES_SUCCESS: (articles) => ({ articles }),
   UPDATE_ARTICLES_ERROR: (error) => ({ error }),
   CREATE_ARTICLE_LOADING : () => ({}),
-  CREATE_ARTICLE_SUCCESS: (newArticle) => ({ newArticle }),
+  CREATE_ARTICLE_SUCCESS: (articles) => ({ articles }),
   CREATE_ARTICLE_ERROR: (error) => ({ error }),
 });
 
@@ -138,10 +139,10 @@ const articlesReducer = handleActions(
       ...state,
       pending: true,
     }),
-    [CREATE_ARTICLE_SUCCESS]: (state, { payload: { newArticle } } ) => ({
+    [CREATE_ARTICLE_SUCCESS]: (state, { payload: { articles } } ) => ({
       ...state,
       pending: false,
-      articles: [...state.articles, newArticle],
+      articles,
     }),
     [CREATE_ARTICLE_ERROR]: (state, { payload: { error }} ) => ({
       ...state,
@@ -155,27 +156,54 @@ const articlesReducer = handleActions(
 // thunk method
 export function FetchAllArticles() {
   return function(dispatch) {
+    dispatch(loadArticlesLoading());
       return article.fetchAllArticles().then((articles) => {
+        try {
           dispatch(loadArticlesSuccess(articles));
+        } catch(err) {
+          dispatch(loadArticlesError(err));
+        }
       })
   }
 }
 
 export function FetchArticle(id) {
   return function(dispatch) {
+    dispatch(loadArticleLoading());
       return article.fetchArticle(id).then((article) => {
+        try {
           dispatch(loadArticleSuccess(article));
+        } catch(err) {
+          dispatch(loadArticleError(err));
+        }
       })
   }
 }
 
 export function UpdateArticles({ id, title, content, time }) {
-  console.log(id, title, content, time);
   return function(dispatch) {
-    return article.updateArticle({ id, title, content, time }).then((articles) => {
-      console.log('newArticles: ', articles)
-        dispatch(updateArticlesSuccess(articles));
-    })
+    dispatch(updateArticlesLoading());
+      return article.updateArticle({ id, title, content, time }).then((articles) => {
+        try {
+          dispatch(updateArticlesSuccess(articles));
+        } catch (err) {
+          dispatch(updateArticlesError(err));
+        }
+      })
+  }
+}
+
+export function CreateArticle({ id, title, content, time }) {
+  return function(dispatch) {
+    dispatch(createArticleLoading());
+      return article.createArticle({ id, title, content, time }).then((articles) => {
+        try {
+          console.log(articles)
+          dispatch(createArticleSuccess(articles));
+        } catch (err) {
+          dispatch(createArticleError(err));   
+        }
+      })
   }
 }
 

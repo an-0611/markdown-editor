@@ -22,7 +22,7 @@ const mapDispatchToProps = dispatch => {
     return {
         dispatch,
         getArticle: (id) => dispatch(FetchArticle(id)),
-        updateArticle: ({ id, title, content, time }) => dispatch(UpdateArticles({ id, title, content, time })),
+        updateArticles: ({ id, title, content, time }) => dispatch(UpdateArticles({ id, title, content, time })),
     }
 };
 
@@ -165,7 +165,7 @@ class Article extends Component {
             return ;
         }
         this.setState({ ableEdit: false, showDoneBtn: false });
-        this.props.updateArticle({
+        this.props.updateArticles({
             id,
             title,
             content,
@@ -204,8 +204,6 @@ class Article extends Component {
         const { history, article, pending } = this.props;
         const { ableEdit, errorMessage, showDoneBtn, showCopyAlert, cacheArticle } = this.state;
         if (pending) return <div>Loading</div>;
-        // console.log(this.state.cacheArticle)
-        console.log(article.time);
         return (
             <Fragment>
                 {errorMessage && <Alert error alertText={errorMessage} /> }

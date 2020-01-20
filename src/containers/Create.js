@@ -1,11 +1,10 @@
 import React, { Component, Fragment } from 'react';
 import { connect } from 'react-redux';
-import { bindActionCreators } from 'redux';
 import ReactMarkdown from 'react-markdown';
 import styled, { css } from "styled-components";
 import { uuid } from 'uuidv4';
 
-import * as articleAction from '../actions/articleActions';
+import { CreateArticle } from '../reducers/articles';
 
 import EditMode from '../components/EditMode';
 import Alert from '../components/Alert';
@@ -13,7 +12,7 @@ import Btn from '../components/Btn';
 
 const mapDispatchToProps = dispatch => {
     return {
-      actions: bindActionCreators({ ...articleAction }, dispatch),
+      createArticle: ({ id, title, content, time }) => dispatch(CreateArticle({ id, title, content, time })),
     }
 }
 
@@ -78,7 +77,7 @@ class Create extends Component {
 
     createArticle = () => {
       const { title, content } = this.state;
-      const { actions, history } = this.props;
+      const { history } = this.props;
       if (title.trim() === '') {
         this.setState({ errorMessage: 'Title: at least one word' });
         return ;
@@ -93,12 +92,13 @@ class Create extends Component {
         content,
         time: new Date().getTime(),
       };
-      actions.createArticleData(newArticle);
-      history.push({
-        pathname: '/',
-        state: {
-          successCreateArticle: true,
-        }
+      this.props.createArticle(newArticle).then(() => {
+        history.push({
+          pathname: '/',
+          state: {
+            successCreateArticle: true,
+          }
+        });
       });
     }
 

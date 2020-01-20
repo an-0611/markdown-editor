@@ -4,7 +4,6 @@ import styled from "styled-components";
 import { get } from 'lodash';
 
 import { FetchAllArticles } from '../reducers/articles';
-import { FetchArticle, UpdateArticles } from '../reducers/articles';
 
 import { fadeInDown} from '../assets/animation';
 import Alert from '../components/Alert';
@@ -22,18 +21,7 @@ const LastArticleBtn = styled.div`
 `;
 
 const Articles = ({ history, articles, dispatch }) => {
-    try {
-        // dispatch(FetchAllArticles());
-        // dispatch(FetchArticle('dea59ea7-1f1a-4d29-b900-9740cf260b72'))
-    } catch (err) {
-        console.log(err)
-    }
-    // console.log(articles)
-    // dispatch(FetchAllArticles());
-    // getAllArticles: () => dispatch(FetchAllArticles()),
-    // dispatch(FetchAllArticles());
-    // getAllArticles();
-    // console.log(articles)
+    dispatch(FetchAllArticles());
     const isCreateAlert = get(history, 'location.state.successCreateArticle', false);
     return (
         <Fragment>
@@ -46,5 +34,4 @@ const Articles = ({ history, articles, dispatch }) => {
     );
 }
 
-// export default connect(mapStateToProps, mapDispatchToProps)(Articles);
 export default connect(mapStateToProps)(Articles);

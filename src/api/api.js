@@ -1,6 +1,6 @@
 import { initialState } from '../reducers/initialState';
 
-export default { fetchAllArticles, fetchArticle, updateArticle };
+export default { fetchAllArticles, fetchArticle, updateArticle, createArticle };
 
 function fetchAllArticles() {
     return new Promise((resolve, reject) => {
@@ -31,6 +31,17 @@ function updateArticle(modifyArticle) {
             resolve({ data: initialState.articles });
         } catch (err) {
             reject(() => { throw new Error('Update Article Failed: ', err); });
+        }
+    });
+}
+
+function createArticle(newArticle) {
+    return new Promise((resolve, reject) => {
+        try {
+            initialState.articles.push(newArticle);
+            resolve({ data: initialState.articles });
+        } catch (err) {
+            reject(() => { throw new Error('Create Article Failed: ', err); });
         }
     });
 }
