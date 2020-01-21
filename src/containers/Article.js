@@ -215,8 +215,8 @@ class Article extends Component {
                     <div className="ArticleContent">
                         <div className="title"> 
                             <div>
-                                { !ableEdit && <div>{article.title}</div>}
-                                { ableEdit && <input type="text" value={cacheArticle.title} onChange={this.handleChangeTitle} placeholder="at least one word" /> }
+                                { (!ableEdit || isPreview) && <div>{cacheArticle.title}</div>}
+                                { (ableEdit && !isPreview) && <input type="text" value={cacheArticle.title} onChange={this.handleChangeTitle} placeholder="at least one word" /> }
                             </div>
                             <BtnContainer>
                                 { !ableEdit &&
@@ -228,14 +228,14 @@ class Article extends Component {
                                 { ableEdit &&
                                     <Fragment>
                                         <Btn text={ isPreview ? 'unpreview' : 'preview' } click={this.preview} />
-                                        <Btn text="cancel" click={this.cancelEdit} />
-                                        { showDoneBtn && <Btn text="done" click={this.submitEdit} />}
+                                        { !isPreview && <Btn text="cancel" click={this.cancelEdit} />}
+                                        { !isPreview && showDoneBtn && <Btn text="save" click={this.submitEdit} />}
                                     </Fragment>
                                 }
                             </BtnContainer>
                         </div>
-                        { (!ableEdit || this.state.isPreview) && <ReactMarkdown className="markdown-body" source={isPreview ? cacheArticle.content : article.content} escapeHtml={false} skipHtml={false} />}
-                        { (ableEdit && !this.state.isPreview) && <EditMode content={cacheArticle.content} onChange={this.handleChangeContent} />} 
+                        { (!ableEdit || isPreview) && <ReactMarkdown className="markdown-body" source={isPreview ? cacheArticle.content : article.content} escapeHtml={false} skipHtml={false} />}
+                        { (ableEdit && !isPreview) && <EditMode content={cacheArticle.content} onChange={this.handleChangeContent} />} 
                     </div>
                     <ArticleFooter time={article.time} />
                 </div>
