@@ -93,10 +93,7 @@ class Article extends Component {
     componentDidMount() {
         this._isMounted = true;
         if (!this._isMounted) return;
-        const { match: { params: { id }, }, } = this.props;
-        this.props.getArticle(id).then(() => {
-            this.setState({ cacheArticle: this.props.article });
-        });
+        this.fetchMappingArticle();
     }
 
     componentDidUpdate(prevProps, prevState) {
@@ -115,6 +112,13 @@ class Article extends Component {
 
     componentWillUnmount() {
         this._isMounted = false;
+    }
+
+    fetchMappingArticle = () => {
+        const { match: { params: { id }, }, } = this.props;
+        this.props.getArticle(id).then(() => {
+            this.setState({ cacheArticle: this.props.article });
+        });
     }
 
     handleChangeTitle = (event) => {
@@ -169,6 +173,7 @@ class Article extends Component {
             content,
             time: new Date().getTime(),
         });
+        this.fetchMappingArticle();
     }
 
     cancelEdit = () => {
@@ -199,7 +204,7 @@ class Article extends Component {
 
     render() {
         const { history, article, pending } = this.props;
-        const { ableEdit, errorMessage, showDoneBtn, showCopyAlert, cacheArticle } = this.state;
+        const { ableEdit, errorMessage, showDoneBtn, showCopyAlert, cacheArticle, isPreview } = this.state;
         if (pending) return <div>Loading...</div>;
         return (
             <Fragment>
@@ -210,8 +215,8 @@ class Article extends Component {
                     <div className="ArticleContent">
                         <div className="title"> 
                             <div>
-                                { !ableEdit && <div>{cacheArticle.title || article.title}</div>}
-                                { ableEdit && <input type="text" value={cacheArticle.title || article.title} onChange={this.handleChangeTitle} placeholder="at least one word" /> }
+                                { !ableEdit && <div>{article.title}</div>}
+                                { ableEdit && <input type="text" value={cacheArticle.title} onChange={this.handleChangeTitle} placeholder="at least one word" /> }
                             </div>
                             <BtnContainer>
                                 { !ableEdit &&
@@ -222,15 +227,15 @@ class Article extends Component {
                                 }
                                 { ableEdit &&
                                     <Fragment>
-                                        <Btn text="preview" click={this.preview} />
+                                        <Btn text={ isPreview ? 'unpreview' : 'preview' } click={this.preview} />
                                         <Btn text="cancel" click={this.cancelEdit} />
                                         { showDoneBtn && <Btn text="done" click={this.submitEdit} />}
                                     </Fragment>
                                 }
                             </BtnContainer>
                         </div>
-                        { (!ableEdit || this.state.isPreview) && <ReactMarkdown className="markdown-body" source={cacheArticle.content || article.content} escapeHtml={false} skipHtml={false} />}
-                        { (ableEdit && !this.state.isPreview) && <EditMode content={cacheArticle.content || article.content} onChange={this.handleChangeContent} />} 
+                        { (!ableEdit || this.state.isPreview) && <ReactMarkdown className="markdown-body" source={isPreview ? cacheArticle.content : article.content} escapeHtml={false} skipHtml={false} />}
+                        { (ableEdit && !this.state.isPreview) && <EditMode content={cacheArticle.content} onChange={this.handleChangeContent} />} 
                     </div>
                     <ArticleFooter time={article.time} />
                 </div>
