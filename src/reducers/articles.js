@@ -1,48 +1,3 @@
-// import { GET_ARTICLES_DATA, GET_ARTICLE_DATA, UPDATE_ARTICLE_DATA, CREATE_ARTICLE_DATA, GET_ARTICLE_PENDING } from '../actions/articleActions';
-// import { initialState } from './initialState';
-
-// export default function articlesReducer(state = initialState, action) {
-//   switch (action.type) {
-//       case GET_ARTICLES_DATA:
-//           return {
-//               ...state,
-//               articles: action.payload.articles,
-//           }
-//       case GET_ARTICLE_DATA:
-//           return {
-//             ...state,
-//             article: action.payload.article,
-//           }
-
-//       case UPDATE_ARTICLE_DATA:
-//           const articles = localStorage.getItem('articles') ? JSON.parse(localStorage.getItem('articles')) : state.articles;
-//           const index = articles.findIndex((article) => { return article.id === action.payload.id; });
-//           const modifiedArticle = {
-//             id: action.payload.id,
-//             title: action.payload.title,
-//             content: action.payload.content,
-//             modifiedTime: action.payload.modifiedTime,
-//           };
-//           if (index >= 0) articles[index] = modifiedArticle;
-//           localStorage.setItem('articles', JSON.stringify(articles));
-//           return {
-//               ...state,
-//               articles: [...articles],
-//           }
-//       case CREATE_ARTICLE_DATA:
-//           if (localStorage.getItem('articles')) localStorage.setItem('articles', JSON.stringify([...JSON.parse(localStorage.getItem('articles')), action.payload.newArticle]));
-//           else localStorage.setItem('articles', JSON.stringify([...state.articles, action.payload.newArticle])); // only reducer data
-//           return {
-//             ...state,
-//             articles: [...state.articles, action.payload.newArticle],
-//           }
-//       default: 
-//           return state;
-//   }
-// }
-
-
-// thunk
 import article from '../api/article';
 
 import { createActions, handleActions } from 'redux-actions';
@@ -54,7 +9,6 @@ import {
   UPDATE_ARTICLES_LOADING, UPDATE_ARTICLES_SUCCESS, UPDATE_ARTICLES_ERROR, // update articles
   CREATE_ARTICLE_LOADING, CREATE_ARTICLE_SUCCESS, CREATE_ARTICLE_ERROR, // create article
 } from '../actions/articleActions';
-
 
 export const {
   // fetch articles
@@ -198,7 +152,6 @@ export function CreateArticle({ id, title, content, time }) {
     dispatch(createArticleLoading());
       return article.createArticle({ id, title, content, time }).then((articles) => {
         try {
-          console.log(articles)
           dispatch(createArticleSuccess(articles));
         } catch (err) {
           dispatch(createArticleError(err));   

@@ -12,20 +12,6 @@ import EditMode from '../components/EditMode';
 import ArticleFooter from '../components/ArticleFooter';
 import Btn from '../components/Btn';
 
-const mapStateToProps = state => ({
-    articles: state.articlesReducer.articles,
-    article: state.articlesReducer.article,
-    pending: state.articlesReducer.pending,
-});
-
-const mapDispatchToProps = dispatch => {
-    return {
-        dispatch,
-        getArticle: (id) => dispatch(FetchArticle(id)),
-        updateArticles: ({ id, title, content, time }) => dispatch(UpdateArticles({ id, title, content, time })),
-    }
-};
-
 const UrlInput = styled.input`
     position: fixed;
     top: 5000px;
@@ -78,6 +64,19 @@ const RedBtn = styled.button`
     animation: ${fadeInDown} 2s ease forwards;
 `;
 
+const mapStateToProps = state => ({
+    article: state.articlesReducer.article,
+    pending: state.articlesReducer.pending,
+});
+
+const mapDispatchToProps = dispatch => {
+    return {
+        dispatch,
+        getArticle: (id) => dispatch(FetchArticle(id)),
+        updateArticles: ({ id, title, content, time }) => dispatch(UpdateArticles({ id, title, content, time })),
+    }
+};
+
 class Article extends Component {
     constructor(props) {
         super(props);
@@ -103,7 +102,6 @@ class Article extends Component {
     componentDidUpdate(prevProps, prevState) {
         if (!this._isMounted) return;
         const { cacheArticle } = this.state;
-        // console.log(cacheArticle);
         if (prevProps.article.title !== cacheArticle.title && !prevState.showDoneBtn) {
             this.setState({ showDoneBtn: true });
         }
@@ -178,14 +176,13 @@ class Article extends Component {
         this.setState({
             ableEdit: false,
             cacheArticle: {...article},
-            // showDoneBtn: false,
         });
     }
 
     copyUrl = () => {
         const { showCopyAlert } = this.state;
-        const el = this.input;
         if (showCopyAlert) return;
+        const el = this.input;
         el.select();
         document.execCommand("copy");
         this.setState({ showCopyAlert: true }, () => {
@@ -203,7 +200,7 @@ class Article extends Component {
     render() {
         const { history, article, pending } = this.props;
         const { ableEdit, errorMessage, showDoneBtn, showCopyAlert, cacheArticle } = this.state;
-        if (pending) return <div>Loading</div>;
+        if (pending) return <div>Loading...</div>;
         return (
             <Fragment>
                 {errorMessage && <Alert error alertText={errorMessage} /> }

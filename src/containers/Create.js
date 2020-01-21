@@ -10,12 +10,6 @@ import EditMode from '../components/EditMode';
 import Alert from '../components/Alert';
 import Btn from '../components/Btn';
 
-const mapDispatchToProps = dispatch => {
-    return {
-      createArticle: ({ id, title, content, time }) => dispatch(CreateArticle({ id, title, content, time })),
-    }
-}
-
 const CreatePageContainer = styled.div`
     display: flex;
     justify-content: space-around;
@@ -36,7 +30,7 @@ const CreatePageContainer = styled.div`
         width: 100%;
         align-items: center;
         justify-content: space-between;
-        margin: 5px 0 0 5px;
+        margin: 5px 0 0 0;
       }
       .createBtnBox .btn {
         width: 40%;
@@ -54,6 +48,12 @@ const HalfContainer = styled.div`
       margin-right: 20px;
     `}
 `;
+
+const mapDispatchToProps = dispatch => {
+  return {
+    createArticle: ({ id, title, content, time }) => dispatch(CreateArticle({ id, title, content, time })),
+  }
+}
 
 class Create extends Component {
     constructor(props) {

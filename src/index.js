@@ -8,7 +8,6 @@ import {
 import { Provider } from 'react-redux';
 // import { createBrowserHistory } from 'history';
 
-import './index.css';
 import configureStore from './store/configureStore';
 import App from './App';
 import * as serviceWorker from './serviceWorker';

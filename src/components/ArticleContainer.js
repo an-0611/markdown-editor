@@ -1,5 +1,6 @@
 import React from 'react';
 import { useHistory } from 'react-router-dom';
+import PropTypes from 'prop-types';
 import styled from "styled-components";
 import { fadeInDown } from '../assets/animation';
 import ReactMarkdown from 'react-markdown';
@@ -25,3 +26,8 @@ export default function ArticleContainer(article) {
         </ArticleHover>
     );
 }
+
+ArticleContainer.propTypes = {
+    article: PropTypes.object,
+};
+
